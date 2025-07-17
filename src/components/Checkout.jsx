@@ -8,6 +8,9 @@ import Input from "./UI/Input";
 import useHttp from "../hooks/useHttp";
 import Error from "./Error";
 import { API_URL } from "../util/config";
+import { useDispatch, useSelector } from "react-redux";
+import { clearCart } from "./store/cartSlice";
+import { hideCheckout,showCart } from "./store/userSlice";
 
 const requestConfig = {
     method: 'POST',
@@ -21,6 +24,10 @@ function Checkout() {
     const { data, isLoading: isSending, error, sendRequest, clearData
     } = useHttp(`${API_URL}orders`, requestConfig);
 
+    const dispatch = useDispatch();
+    const cartItems = useSelector((store) => store.cart.items);
+    const userProgress = useSelector((store) => store.user.progress);
+
     const checkoutHandler = (event) => {
         event.preventDefault();
 
@@ -29,28 +36,26 @@ function Checkout() {
 
         sendRequest(JSON.stringify({
             order: {
-                items: cartCtx.items,
+                items: cartItems,
                 customer: customerData
             },
         }));
-
     }
 
-    const cartCtx = useContext(CartContext);
     const userProgressCtx = useContext(UserProgressContext);
 
-    const cartTotalAmount = cartCtx.items.reduce((cartTotal, item) => {
+    const cartTotalAmount = cartItems.reduce((cartTotal, item) => {
         return cartTotal + item.quantity * item.price
     }, 0);
 
     function handleCloseCheckout() {
-        userProgressCtx.hideCheckout();
-        userProgressCtx.showCart();
+        dispatch(hideCheckout());
+        dispatch(showCart());
     }
 
     function handleFinish() {
-        userProgressCtx.hideCheckout();
-        cartCtx.clearCart();
+        dispatch(hideCheckout());
+        dispatch(clearCart());
         clearData();
     }
 
@@ -80,7 +85,7 @@ function Checkout() {
     }
 
     return (
-        <Modal open={userProgressCtx.progress === 'checkout'}>
+        <Modal open={userProgress === 'checkout'}>
 
             <form onSubmit={checkoutHandler}>
                 <h2>Checkout</h2>
@@ -95,7 +100,6 @@ function Checkout() {
                 </div>
 
                 {error && <Error title="Failed to submit order" message={error} />}
-
                 <p className="modal-actions">{actions}</p>
 
             </form>

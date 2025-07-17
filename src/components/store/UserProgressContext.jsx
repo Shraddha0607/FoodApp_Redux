@@ -2,10 +2,10 @@ import { createContext, useState } from "react";
 
 export const UserProgressContext = createContext({
     progress: '', // 'cart', 'checkout'
-    showCart: () => { },
-    hideCart: () => { },
-    showCheckout: () => { },
-    hideCheckout: () => { }
+    showCart: () => {},
+    hideCart: () => {},
+    showCheckout: () => {},
+    hideCheckout: () => {}
 });
 
 export function UserProgressContextProvider({ children }) {

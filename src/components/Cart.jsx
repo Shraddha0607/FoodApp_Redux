@@ -4,38 +4,42 @@ import Modal from "./UI/Modal";
 import { currencyFormatter } from "../util/formatting";
 import { UserProgressContext } from "./store/UserProgressContext";
 import Button from "./UI/Button";
+import { useDispatch, useSelector } from "react-redux";
+import { addItem, removeItem } from "./store/cartSlice";
+import { hideCart, showCheckout } from "./store/userSlice";
 
 function Cart() {
-    const cartCtx = useContext(CartContext);
-    const userProgressCtx = useContext(UserProgressContext);
+    const dispatch = useDispatch();
+    const cartItems = useSelector((store) => store.cart.items);
+    const userProgress = useSelector((store) => store.user.progress);
     
-    const cartTotal = cartCtx.items.reduce((totalAmount, item) => {
+    const cartTotal = cartItems.reduce((totalAmount, item) => {
         return totalAmount + item.quantity * item.price
     }, 0);
 
     function handleCloseCart() {
-        userProgressCtx.hideCart();
+        dispatch(hideCart());
     }
 
     function handleCheckoutCart() {
-        userProgressCtx.showCheckout();
+        dispatch(showCheckout());
     }
 
     function increaseQuantity(item) {
-        cartCtx.addItem(item);
+        dispatch(addItem(item));
     }
 
     function decreaseQuantity(id) {
-        cartCtx.removeItem(id)
+        dispatch(removeItem(id));
     }
 
     return (
-        <Modal className="cart" open={userProgressCtx.progress === 'cart'}>
+        <Modal className="cart" open={userProgress === 'cart'}>
             <h2>Your Cart</h2>
-            {cartCtx.items.length === 0 && <p>No Item found in cart!</p>}
+            {cartItems.length === 0 && <p>No Item found in cart!</p>}
             <ul>
-                {cartCtx.items.length > 0 && (
-                    cartCtx.items.map((item) => (
+                {cartItems.length > 0 && (
+                    cartItems.map((item) => (
                         <li key={item.id} className="cart-item">
                             <div>
                                 <p>{item.name} - {item.quantity} * {currencyFormatter.format(item.price)} </p>
@@ -52,7 +56,7 @@ function Cart() {
             <p className="cart-total">{currencyFormatter.format(cartTotal)}</p>
             <div className="modal-actions">
                 <Button textOnly onClick={handleCloseCart}>Close</Button>
-                {cartCtx.items.length !== 0 && <Button onClick={handleCheckoutCart}>Go To Checkout</Button>}
+                {cartItems.length !== 0 && <Button onClick={handleCheckoutCart}>Go To Checkout</Button>}
             </div>
         </Modal>
     )

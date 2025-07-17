@@ -3,17 +3,21 @@ import logoImg from '../assets/logo.jpg';
 import Button from './UI/Button';
 import { CartContext } from './store/CartContext';
 import { UserProgressContext } from './store/UserProgressContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { showCart } from './store/userSlice';
 
 function Header() {
-  const cartCtx = useContext(CartContext);
-  const userProgressCtx = useContext(UserProgressContext);
 
-  const totalCartItems = cartCtx.items.reduce((totalNumberOfItems, item) => {
+  // subscribring to the store using a Selector
+  const cartItems = useSelector((store) => store.cart.items);
+  const dispatch = useDispatch();
+
+  const totalCartItems = cartItems.reduce((totalNumberOfItems, item) => {
     return totalNumberOfItems + item.quantity;
   }, 0);
 
   function handleShowCart() {
-    userProgressCtx.showCart();
+    dispatch(showCart());
   }
 
   return (

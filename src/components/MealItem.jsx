@@ -1,14 +1,17 @@
 import { useContext } from 'react';
 import { currencyFormatter } from '../util/formatting';
 import Button from './UI/Button';
-import {CartContext} from './store/CartContext';
+import { CartContext } from './store/CartContext';
 import { API_URL } from '../util/config';
+import { useDispatch } from 'react-redux';
+import {addItem} from './store/cartSlice.js';
 
 function MealItem({ meal }) {
     const cartCtx = useContext(CartContext);
+    const dispatch = useDispatch();
 
     function handleAddMealToCart() {
-        cartCtx.addItem(meal);
+        dispatch(addItem(meal));
     }
 
     return (

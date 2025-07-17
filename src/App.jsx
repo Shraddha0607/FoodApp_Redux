@@ -5,17 +5,20 @@ import Meals from "./components/Meals";
 import CartContextProvider from './components/store/CartContext';
 import { UserProgressContextProvider } from "./components/store/UserProgressContext";
 
+import { Provider } from "react-redux";
+import appStore from "./components/store/appStore";
+
 function App() {
 
   return (
-    <UserProgressContextProvider>
-      <CartContextProvider>
+    <Provider store={appStore}>
+      <UserProgressContextProvider>
         <Header />
         <Cart />
         <Meals />
         <CheckoutForm />
-      </CartContextProvider>
-    </UserProgressContextProvider>
+      </UserProgressContextProvider>
+    </Provider>
   );
 }
 
